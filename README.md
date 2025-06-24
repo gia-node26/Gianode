@@ -20,6 +20,17 @@ Together, they monitor plant health, analyze conditions, and provide context-awa
 - 🔌 Smart plug support for automation
 - 📡 Optional Firebase or MQTT integration
 
+🔌 Sensors Directory
+
+<pre>
+Node/
+└── sensors/
+    ├── read_temp_humidity.py    # DHT11/DHT22 or BME280
+    ├── read_soil_moisture.py    # Capacitive sensor
+    ├── read_ph.py               # Analog pH (optional)
+    └── mock_data.py             # Simulated values for local dev/testing
+</pre>
+
 ---
 
 ## 🗂️ Repo Structure
