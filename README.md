@@ -82,3 +82,29 @@ gianode/
 ├── requirements.txt       # Dependencies
 └── LICENSE
 </pre>
+---
+
+## 🔁 How It Works
+
+1. `Node` collects sensor data and a plant image
+2. Data is combined into a JSON payload
+3. `Gia` classifies the image and interprets the environment
+4. A care recommendation or action is returned
+5. Optional smart plug or alert is triggered
+
+---
+## 🛠 Getting Started
+
+```bash
+git clone https://github.com/YOURUSERNAME/gianode.git
+cd gianode
+pip install -r requirements.txt
+python3 pipeline/run_pipeline.py
+{
+  "timestamp": "2025-06-24 08:00",
+  "class": "droopy",
+  "moisture": 41,
+  "pH": 6.3,
+  "temp": 24.5,
+  "growth_stage": "veg"
+}
