@@ -20,7 +20,7 @@ Together, they monitor plant health, analyze conditions, and provide context-awa
 - 🔌 Smart plug support for automation
 - 📡 Optional Firebase or MQTT integration
 
-##🔌 Sensors Directory
+## 🔌 Sensors Directory
 
 <pre>
 Node/
