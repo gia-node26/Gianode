@@ -41,36 +41,44 @@ Together, they form a low-cost, expandable platform for indoor and outdoor plant
 
 ---
 
-## 🧠 Architecture Overview
-        +--------------------+
-        |       Gia          |
-        |  (AI + GPT Brain)  |
-        +---------+----------+
-                  ^
-                  |
-     JSON         |           +--------------------+
-(image + sensor)  +-----------+       Node         |
-                              |  (Camera + Sensors)|
-                              +--------------------+
-
 ## 🗂️ Repo Structure
+<pre>
 gianode/
-├── Gia/               # AI + learning engine
+├── Gia/                   # AI + learning engine
 │   ├── classify_image.py
 │   ├── analyze_data.py
-│   └── gpt_response.py
+│   ├── gpt_response.py
+│   ├── training/
+│   │   ├── dataset/
+│   │   └── notes.md
+│   └── utils/
+│       └── __init__.py
 │
-├── Node/              # Sensor + camera data collection
+├── Node/                  # Hardware & sensor-side logic
 │   ├── read_sensors.py
 │   ├── capture_image.py
-│   └── control_plug.py
+│   ├── control_plug.py
+│   ├── build_json.py
+│   └── config/
+│       └── node_config.json
 │
-├── pipeline/          # Orchestrates full cycle
-│   └── run_pipeline.py
+├── pipeline/              # Master controller scripts
+│   ├── run_pipeline.py
+│   └── cronjob.sh
 │
-├── data/              # Example logs + images
-├── dashboard/         # Optional local interface
-├── docs/              # Diagrams, architecture
+├── data/                  # Logs + image capture
+│   ├── images/
+│   └── logs/
+│
+├── dashboard/             # (Optional) Local Flask UI
+│   └── app.py
+│
+├── docs/                  # Diagrams, notes, and planning
+│   └── architecture.png
+│
+├── index.html             # GitHub Pages homepage
+├── CNAME                  # Domain reference
 ├── README.md
-├── requirements.txt
-└── index.html         # GitHub Pages homepage
+├── requirements.txt       # Dependencies
+└── LICENSE
+</pre>
