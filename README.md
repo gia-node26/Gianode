@@ -99,5 +99,9 @@ gianode/
   "pH": 6.3,
   "growth_stage": "veg"
 }
+---
+## 📝 License
 
+This project is licensed under the [MIT License](LICENSE) with an added ethical clause.
 
+Please credit the creator and do not commercially exploit this work without permission.
