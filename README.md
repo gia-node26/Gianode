@@ -88,19 +88,14 @@ gianode/
 
 ## 🧠 Sample Output (JSON)
 
-```bash
-git clone https://github.com/YOURUSERNAME/gianode.git
-cd gianode
-pip install -r requirements.txt
-python3 pipeline/run_pipeline.py
 {
-  "timestamp": "2025-06-24 08:00",
+  "timestamp": "2025-06-24T08:00:00",
   "class": "droopy",
-  "moisture": 41,
+  "temp": 24.7,
+  "humidity": 53.2,
+  "moisture": 42,
   "pH": 6.3,
-  "temp": 24.5,
   "growth_stage": "veg"
 }
-Gia may reply:
 
-“Looks like your plant is drooping but soil is still moist. No need to water. Consider adjusting lighting.”
+
