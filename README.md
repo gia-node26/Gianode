@@ -1,21 +1,13 @@
 # 🌿 Gianode
 
-**Gianode** is a modular, AI-enhanced plant care system. It combines vision, sensors, and GPT logic to monitor, learn from, and care for your plants — indoor or outdoor.
+**Gianode** is a modular, open-source AI-based plant care system.
 
-Built for growers, students, and researchers, Gianode makes intelligent plant care affordable, explainable, and personal.
+It is made of two connected components:
 
----
+- 🧠 **Gia** – the AI engine (image classification + GPT-based guidance)
+- 🌱 **Node** – the hardware unit (camera + sensors for moisture, temp, etc.)
 
-## 💡 What Is It?
-
-**Gia** is the plant assistant.  
-**Gianode** is the physical system — ESP32-CAM + soil sensors + logic.  
-Together they:
-- Capture visual + soil data
-- Analyze health using OpenCV or Teachable Machine
-- Log environmental conditions
-- Generate care suggestions using GPT
-- Optionally automate lighting, watering, or alerts
+Together, they monitor plant health, analyze conditions, and provide context-aware care suggestions or actions — all with low-cost components and custom AI logic.
 
 ---
 
@@ -27,17 +19,6 @@ Together they:
 - 🧬 GPT-based daily plant analysis (JSON → response)
 - 🔌 Smart plug support for automation
 - 📡 Optional Firebase or MQTT integration
-
----
-# 🌿 Gianode
-
-**Gianode** is an open, modular AI-based plant care system.  
-It’s split into two parts:
-
-- **Gia** – the intelligent assistant (classification, GPT, care suggestions)  
-- **Node** – the physical system (camera + soil/environment sensors)
-
-Together, they form a low-cost, expandable platform for indoor and outdoor plant monitoring, automation, and education.
 
 ---
 
