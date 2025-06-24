@@ -1,4 +1,4 @@
-# 🌿 Gia-node
+# 🌿 Gia-Node
 
 **Gianode** is a modular, open-source AI-based plant care system.
 
