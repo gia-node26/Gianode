@@ -105,3 +105,6 @@ gianode/
 This project is licensed under the [MIT License](LICENSE) with an added ethical clause.
 
 Please credit the creator and do not commercially exploit this work without permission.
+
+- 🔓 Open Source: This project is available under the [MIT License](./LICENSE)
+- 💼 Commercial: See the [Commercial License Terms](./COMMERCIAL_LICENSE.md)
