@@ -75,6 +75,7 @@ gianode/
 
 ---
 ## 🛠 Getting Started
+🧠 Sample Output (JSON)
 
 ```bash
 git clone https://github.com/YOURUSERNAME/gianode.git
