@@ -85,8 +85,8 @@ gianode/
 5. Optional smart plug or alert is triggered
 
 ---
-## 🛠 Getting Started
-🧠 Sample Output (JSON)
+
+## 🧠 Sample Output (JSON)
 
 ```bash
 git clone https://github.com/YOURUSERNAME/gianode.git
