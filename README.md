@@ -90,3 +90,6 @@ python3 pipeline/run_pipeline.py
   "temp": 24.5,
   "growth_stage": "veg"
 }
+Gia may reply:
+
+“Looks like your plant is drooping but soil is still moist. No need to water. Consider adjusting lighting.”
