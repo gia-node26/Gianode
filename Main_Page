@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gianode Dashboard — Merged Responsive</title>
+  <style>
+    :root{
+      --bg: #a8969600;
+      --bg-2: #e0e0e0d5;
+      --nav: #E94B3C;
+      --nav-text: #fff5f5;
+      --chip: #e7e7e7;
+      --card: #e94b3cb0;
+      --card-2:#e94b3cb7;
+      --ink:#5c3737;
+      --ink-soft:#9a4a4a;
+      --accent:#E94B3C;
+      --accent-2:#E94B3C;
+      --line: rgba(126,42,42,0.2);
+      --white:#fff;
+
+      --nav-h: 70px;
+      --footer-h: 30px;
+      --safe: clamp(8px, 1.2vw, 14px);
+      --border-w: clamp(1px, 0.16vw, 2px);
+      --content-w: 1100px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,var(--bg) 0%, var(--bg-2) 100%);
+      color:var(--ink);
+      overflow:auto;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+
+    :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:6px; }
+
+    .nav{ position:sticky; top:0; z-index:10; height:var(--nav-h); background:var(--nav); color:var(--nav-text); box-shadow:0 2px 0 0 rgba(0,0,0,0.06); display:block; }
+    .nav-inner{
+      max-width:var(--content-w); margin:0 auto; padding:19px 24px;
+      display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:18px;
+    }
+    .nav-inner .left,.nav-inner .right{ display:flex; gap:18px; align-items:center; min-width:0; font-size:clamp(14px,1.2vw,18px); }
+    .nav-inner .left{ justify-content:flex-start; } .nav-inner .right{ justify-content:flex-end; }
+    .nav-inner .brand{ display:flex; gap:10px; align-items:center; justify-content:center; font-weight:800; letter-spacing:.2px; white-space:nowrap; font-size:clamp(18px,2vw,28px); }
+    .nav a{ color:inherit; text-decoration:none; font-weight:600; opacity:.95; }
+
+    .wrap{
+      padding:35px; max-width:var(--content-w); margin:0 auto;
+      min-height:calc((100vh - var(--nav-h) - var(--footer-h)) * 0.81);
+      height:auto; display:grid; grid-template-rows:auto 1fr; gap:12px; overflow:visible;
+      border-left:var(--border-w) solid var(--line); border-right:var(--border-w) solid var(--line);
+    }
+    .tabs{display:flex; gap:10px; margin:6px 0 8px; flex-wrap:wrap}
+    .chip{padding:8px 14px; border-radius:12px; background:var(--chip); border:1px solid var(--line); font-weight:700; color:var(--ink); cursor:pointer}
+    .chip.active{background:var(--white); border-color:var(--accent); box-shadow:0 1px 0 0 rgba(0,0,0,.04)}
+    .chip.ghost{background:transparent; border-style:dashed}
+
+    .panel{ background:var(--white); border:var(--border-w) solid var(--line); border-radius:14px; padding:var(--safe); box-shadow:0 6px 30px rgba(217,72,72,0.10); overflow:visible; }
+    .layout{ display:grid; grid-template-rows:minmax(0,calc(34vh * 0.81)) minmax(0,1fr); gap:12px; height:auto; }
+    .panel-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px}
+    .panel-title{display:flex; align-items:center; gap:10px}
+    .eyebrow{font-weight:900; letter-spacing:.2em; color:var(--accent-2); opacity:.4}
+
+    .gia-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; height:80%}
+    .card{ background:var(--card); border:var(--border-w) solid var(--line); border-radius:12px; padding:var(--safe); display:flex; flex-direction:column; min-height:0; }
+    .card.light{ background:var(--card-2) }
+
+    .card .tiles{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; align-items:start; margin-top:6px; min-width:0; }
+    .card .tiles .tile{
+      background:var(--white); border:var(--border-w) solid var(--line); border-radius:10px; display:flex; align-items:center; justify-content:center; color:var(--ink-soft);
+      font-weight:700; padding:clamp(8px,1.2vw,16px); box-shadow:0 1px 0 rgba(0,0,0,0.04); word-break:break-word; min-width:0; width:100%;
+    }
+    @media (max-width: 960px){ .card .tiles { grid-template-columns: 1fr; } }
+
+    .skeleton{height:100%; border-radius:10px; background:repeating-linear-gradient(90deg, rgba(255,255,255,0.55), rgba(255,255,255,0.55) 16px, rgba(255,198,198,0.6) 16px, rgba(255,198,198,0.6) 32px)}
+
+    .chat{
+      display:flex; flex-direction:column; gap:8px; flex:0 1 auto; overflow:auto; background:#fff; border:var(--border-w) solid var(--line); border-radius:10px;
+      padding:10px; max-height:90vh; box-sizing:border-box; width:100%; min-height:0; overflow-wrap:anywhere; word-break:break-word;
+    }
+    .msg{ max-width:70%; width:fit-content; white-space:pre-wrap; word-break:break-word; overflow-wrap:anywhere; font-size:clamp(13px,1.2vw,14px); padding:8px 10px; border-radius:8px; border:var(--border-w) solid transparent; }
+    .msg.user{ align-self:flex-end; background:linear-gradient(90deg,var(--accent),#ff7b7b); color:#2b0303; border-radius:10px 10px 4px 10px }
+    .msg.bot{ align-self:flex-start; background:rgba(0,0,0,0.03); color:var(--ink) }
+    .compose{ display:flex; gap:8px; margin-top:8px; align-items:center; width:100% }
+    .compose input{ flex:1; padding:10px; border-radius:8px; border:3px solid rgba(0,0,0,0.08); background:#fff; color:inherit; min-width:0; }
+    .compose button{ padding:10px 12px; border-radius:8px; border:none; background:var(--accent); color:#fff; font-weight:700; cursor:pointer; flex:0 0 auto; }
+
+    .controls{ display:flex; gap:10px; margin:2px 0 8px }
+    .btn{ border:1px solid var(--line); background:var(--chip); padding:8px 10px; border-radius:10px; font-weight:700; color:var(--ink); cursor:pointer }
+    .btn.primary{ background:var(--accent); border-color:transparent; color:#fff }
+
+    .metrics{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; align-items:start; grid-auto-rows:min-content; height:auto; }
+    .metric{ background:var(--white); border:var(--border-w) solid var(--line); border-radius:16px; padding:clamp(8px,1.2vw,16px); display:flex; flex-direction:column; gap:6px; align-items:stretch; box-shadow:0 4px 18px rgba(233,90,90,0.08); min-height:0; }
+    .metric h4{ margin:0; color:var(--ink); font-size:16px }
+    .delta{ color:var(--ink-soft); font-size:12px; margin-top:0 }
+    .value{ font-size:28px; line-height:1; font-weight:900; color:var(--ink) }
+    .unit{ font-size:12px; font-weight:900; color:var(--ink-soft); margin-left:4px }
+    .sparkline{ width:100%; aspect-ratio:6/1; min-height:48px; max-height:74px; display:block; max-width:100%; box-sizing:border-box; }
+
+    .notifications{ display:flex; flex-direction:column; gap:10px; min-height:0 }
+    .notif-card-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px }
+    .notif-list{ display:flex; flex-direction:column; gap:8px; min-height:0; max-height:60vh; overflow:auto; padding:6px 0 }
+    .notif-item{ background:var(--white); border:var(--border-w) solid var(--line); border-radius:10px; padding:10px; display:flex; align-items:center; justify-content:space-between; gap:10px; min-width:0; box-shadow:0 1px 0 rgba(0,0,0,0.04); color:var(--ink); font-weight:700; }
+    .notif-meta{ font-size:12px; color:var(--ink-soft); font-weight:600 }
+
+    @media (max-width:520px){
+      .nav-inner{ padding:12px 16px; }
+      .gia-grid{ grid-template-columns:minmax(0,1fr) minmax(160px,220px); gap:8px; }
+      .notif-item{ padding:8px; font-size:13px }
+    }
+
+    .page-edge{ height:var(--footer-h); border-top:var(--border-w) solid var(--line); width:100%; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+</head>
+<body>
+  <header class="nav" role="navigation" aria-label="Primary">
+    <div class="nav-inner">
+      <div class="left">
+        <a href="#">Settings</a>
+        <a href="#">Profile</a>
+      </div>
+      <div class="brand">ꕤ<span>Gianode</span></div>
+      <div class="right">
+        <a href="#">Marketplace</a>
+        <a href="#">Cart</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="tabs" role="tablist" aria-label="Rooms">
+      <button class="chip active" role="tab" aria-selected="true" type="button">Bedroom</button>
+      <button class="chip" role="tab" type="button">Patio</button>
+      <button class="chip" role="tab" type="button">Backyard</button>
+      <button class="chip ghost" role="tab" type="button">Add+</button>
+    </div>
+
+    <div class="layout">
+      <section class="panel" aria-labelledby="gia-title">
+        <div class="panel-head">
+          <div class="panel-title"><span class="eyebrow">GIA</span><h2 id="gia-title" style="margin:0">Overview</h2></div>
+          <div class="right"></div>
+        </div>
+
+        <div class="gia-grid">
+          <div class="card light notifications" aria-labelledby="notif-title">
+            <div class="notif-card-head">
+              <h3 id="notif-title" style="margin:0">Notifications</h3>
+              <div class="notif-meta" id="live-status">waiting…</div>
+            </div>
+            <div class="notif-list" role="list" aria-live="polite" id="notif-list"></div>
+          </div>
+
+
+          <div class="card" style="display:flex;flex-direction:column;min-height:0">
+            <div class="chat" id="chat" role="log" aria-live="polite">
+              <div class="msg bot">Hello — I can help suggest care tips or create simple automation rules. Try: "When soil &lt; 30% notify me."</div>
+            </div>
+            <div class="compose">
+              <input id="ai-input" placeholder="Ask the agent about plant care or automation..." aria-label="AI message input">
+              <button id="send-btn" type="button">Send</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="node-title">
+        <div class="panel-head">
+          <div class="panel-title"><span class="eyebrow">NODE</span><h2 id="node-title" style="margin:0">Sensor Snapshot</h2></div>
+        </div>
+
+        <div class="controls" role="toolbar" aria-label="Node controls">
+          <button class="btn" type="button">Add+</button>
+        </div>
+
+        <div class="metrics" aria-live="polite">
+          <article class="metric" aria-labelledby="m-h">
+            <h4 id="m-h">Humidity</h4>
+            <div class="delta">now</div>
+            <div><span class="value" id="hum-value">67</span><span class="unit">%</span></div>
+            <canvas class="sparkline" id="chart-hum"></canvas>
+          </article>
+
+          <article class="metric" aria-labelledby="m-t">
+            <h4 id="m-t">Temperature</h4>
+            <div class="delta">now</div>
+            <div><span class="value" id="temp-value">72</span><span class="unit">°F</span></div>
+            <canvas class="sparkline" id="chart-temp"></canvas>
+          </article>
+
+          <article class="metric" aria-labelledby="m-lux">
+            <h4 id="m-lux">Lux Light</h4>
+            <div class="delta">now</div>
+            <div><span class="value" id="light-value">17000</span><span class="unit">lx</span></div>
+            <canvas class="sparkline" id="chart-light"></canvas>
+          </article>
+
+          <article class="metric" aria-labelledby="m-s">
+            <h4 id="m-s">Soil Moisture</h4>
+            <div class="delta">now</div>
+            <div><span class="value" id="soil-value">67</span><span class="unit">%</span></div>
+            <canvas class="sparkline" id="chart-soil"></canvas>
+          </article>
+
+          <article class="metric" aria-labelledby="m-add">
+            <h4 id="m-add">ADD+</h4>
+            <div class="delta">Click Here to Add New Sensor</div>
+            <p class="notif-meta">Search Sensor Type</p>
+          </article>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="page-edge" aria-hidden="true"></div>
+
+  <!-- Scripts (non-module): expose globals on window so the module can use them) -->
+  <script>
+    // shared state
+    window.vals = { hum: 67, temp: 72, light: 17000, soil: 67 };
+    window.gotLive = false;
+
+    const notifList = document.getElementById('notif-list');
+    const liveStatus = document.getElementById('live-status');
+
+    window.notify = function(text, meta=''){
+      const item = document.createElement('div');
+      item.className = 'notif-item';
+      item.innerHTML = `<div style="min-width:0"><div>${text}</div><div class="notif-meta">${meta}</div></div>`;
+      notifList.prepend(item);
+    };
+
+    // simple chat demo
+    const chatEl = document.getElementById('chat');
+    function appendMsg(text, who='bot'){
+      const div = document.createElement('div');
+      div.className = 'msg ' + (who === 'user' ? 'user' : 'bot');
+      div.textContent = text;
+      chatEl.appendChild(div);
+      chatEl.scrollTop = chatEl.scrollHeight;
+    }
+    document.getElementById('send-btn').addEventListener('click', ()=>{
+      const i = document.getElementById('ai-input');
+      const q = i.value.trim(); if(!q) return;
+      appendMsg(q,'user'); i.value='';
+      setTimeout(()=>appendMsg(`Tip: Keep soil 30–70%. Current ${window.vals.soil.toFixed(0)}%.`,'bot'), 600);
+    });
+
+    // charts
+    const charts = {};
+    const historyLen = 24;
+
+    function makeSpark(id, min, max){
+      const ctx = document.getElementById(id).getContext('2d');
+      return new Chart(ctx, {
+        type:'line',
+        data:{ labels:Array.from({length:historyLen},()=>''), datasets:[{
+          data:Array(historyLen).fill(min),
+          borderColor:getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#ff3636',
+          backgroundColor:'rgba(255,54,54,0.18)',
+          borderWidth:3.5, fill:true, tension:0.35, pointRadius:0
+        }]},
+        options:{ responsive:true, maintainAspectRatio:false, animation:{duration:250},
+          plugins:{ legend:{display:false}, tooltip:{enabled:true} },
+          scales:{ x:{display:false,grid:{display:false}}, y:{display:false,grid:{display:false},min,max} }
+        }
+      });
+    }
+
+    function initCharts(){
+      charts.hum  = makeSpark('chart-hum', 0, 100);
+      charts.temp = makeSpark('chart-temp', 40, 100);
+      charts.light= makeSpark('chart-light', 0, 20000);
+      charts.soil = makeSpark('chart-soil', 0, 100);
+      window.updateCharts();
+
+      // keep demo moving until real data arrives
+      setInterval(()=>{ if(!window.gotLive) window.tick(); }, 2200);
+    }
+
+    window.randomWalk = function(v, step, min, max){
+      let n = v + (Math.random()*2-1)*step;
+      return Math.max(min, Math.min(max, n));
+    }
+
+    window.tick = function(){
+      window.vals.hum  = window.randomWalk(window.vals.hum, 2, 0, 100);
+      window.vals.temp = window.randomWalk(window.vals.temp, 0.6, 40, 100);
+      window.vals.light= window.randomWalk(window.vals.light, 800, 0, 20000);
+      window.vals.soil = window.randomWalk(window.vals.soil, 2, 0, 100);
+      window.updateCharts();
+    }
+
+    window.updateCharts = function(){
+      const map = { hum:'%', temp:'°F', light:'lx', soil:'%' };
+      Object.entries(charts).forEach(([k, c])=>{
+        const ds = c.data.datasets[0].data;
+        ds.push(window.vals[k]);
+        if(ds.length > historyLen) ds.shift();
+        c.update('none');
+        const v = k==='light' ? Math.round(window.vals[k])
+                : k==='temp'  ? window.vals[k].toFixed(1)
+                : window.vals[k].toFixed(0);
+        document.getElementById(`${k}-value`).textContent = v;
+        document.querySelector(`#${k}-value + .unit`).textContent = map[k];
+      });
+    }
+
+    const ro = new ResizeObserver(()=>{ Object.values(charts).forEach(c=>c.resize()); });
+    window.addEventListener('DOMContentLoaded', ()=>{
+      initCharts();
+      document.querySelectorAll('.metric').forEach(m=>ro.observe(m));
+      window.addEventListener('orientationchange', ()=>Object.values(charts).forEach(c=>c.resize()));
+    });
+  </script>
+
+  <!-- ===== Firebase -> Dashboard wiring ===== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+    import { getDatabase, ref, onValue, query, limitToLast, onChildAdded } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDqTLpAsXbslKYv5Oh6n5IzNzigbPWFANY",
+      authDomain: "giatest-74d4a.firebaseapp.com",
+      databaseURL: "https://giatest-74d4a-default-rtdb.firebaseio.com",
+      projectId: "giatest-74d4a",
+      storageBucket: "giatest-74d4a.appspot.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    try {
+      await signInAnonymously(auth);
+      console.log("[FB] Web signed in anonymously:", auth.currentUser?.uid);
+    } catch (e) {
+      console.error("[FB] Anonymous sign-in failed:", e);
+    }
+
+    // Use your current ESP UID here:
+    const NODE_UID = "ZcbuTGW3NZQdzIoveOpWwRPRtno2";
+    const basePath = `nodes/${NODE_UID}`;
+    console.log("[FB] Reading from:", basePath);
+
+    // Seed last 24
+    const histRef = query(ref(db, `${basePath}/history`), limitToLast(24));
+    onChildAdded(histRef, (snap) => {
+      const d = snap.val();
+      if (!d) return;
+      if (typeof d.hum   === "number") window.vals.hum   = d.hum;
+      if (typeof d.temp  === "number") window.vals.temp  = d.temp; // °F
+      if (typeof d.light === "number") window.vals.light = d.light;
+      if (typeof d.soil  === "number") window.vals.soil  = d.soil;
+      window.updateCharts();
+    });
+
+    // Live /latest
+    const latestRef = ref(db, `${basePath}/latest`);
+    onValue(latestRef, (snap) => {
+      if (!snap.exists()) {
+        console.warn("[FB] No /latest yet at", `${basePath}/latest`);
+        document.getElementById('live-status').textContent = "no data yet";
+        return;
+      }
+      const d = snap.val();
+      if (typeof d.hum   === "number") window.vals.hum   = d.hum;
+      if (typeof d.temp  === "number") window.vals.temp  = d.temp;
+      if (typeof d.light === "number") window.vals.light = d.light;
+      if (typeof d.soil  === "number") window.vals.soil  = d.soil;
+
+      window.updateCharts();
+
+      if (!window.gotLive) {
+        window.gotLive = true;
+        const t = d.ts ? new Date(d.ts*1000).toLocaleTimeString() : "now";
+        window.notify("Live stream connected", `last sample ${t}`);
+        document.getElementById('live-status').textContent = "live";
+        console.log("[FB] Live update:", d);
+      }
+    }, (err) => {
+      console.error("[FB] onValue error (rules?):", err);
+      document.getElementById('live-status').textContent = "error";
+    });
+  </script>
+</body>
+</html>
