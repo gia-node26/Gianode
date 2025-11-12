@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Gia • Node Console</title>
+<style>
+  :root{
+    --ink:#1f2937; --muted:#6b7280; --bg:#f8fafc; --card:#ffffff; --accent:#E94B3C; --ok:#16a34a; --warn:#f59e0b; --err:#ef4444;
+  }
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Arial}
+  .wrap{max-width:980px;margin:24px auto;padding:0 16px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .card{background:var(--card);border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 2px 16px rgba(0,0,0,.04)}
+  .pad{padding:16px}
+  h1{font-size:22px;margin:0 0 12px}
+  h2{font-size:16px;margin:0 0 8px}
+  label{font-weight:600;font-size:13px}
+  input, button, textarea{font:inherit}
+  input, textarea{width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:12px;background:#fff}
+  textarea{min-height:96px;resize:vertical}
+  button{padding:10px 14px;border:0;border-radius:12px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+  button:disabled{opacity:.6;cursor:not-allowed}
+  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#f3f4f6;color:#111827;font-size:12px}
+  .chip.ok{background:#ecfdf5;color:#065f46}.chip.warn{background:#fffbeb;color:#92400e}.chip.err{background:#fef2f2;color:#991b1b}
+  .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
+  .muted{color:var(--muted)}
+  .list{display:flex;flex-direction:column;gap:10px;max-height:320px;overflow:auto}
+  .reading{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .kv{display:flex;justify-content:space-between;padding:8px 10px;border:1px solid #e5e7eb;border-radius:10px;background:#fff}
+  .footer{margin-top:16px;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Gia • Node Console</h1>
+
+  <div class="card pad" style="margin-bottom:16px">
+    <div class="row" style="margin-bottom:10px">
+      <label for="uid">UID</label>
+      <input id="uid" placeholder="53Dv1T52reOSmrdFcbqZJrmMti82" style="max-width:420px">
+      <button id="saveUid">Use UID</button>
+      <span id="statusBackend" class="chip">backend: unknown</span>
+      <span id="statusLatest" class="chip">latest: —</span>
+    </div>
+    <div class="muted mono" id="backendUrlShow"></div>
+  </div>
+
+  <div class="grid">
+    <!-- LEFT: Readings -->
+    <div class="card pad">
+      <h2>Live Readings</h2>
+      <div class="muted" style="margin-bottom:8px">Polling <span class="mono">/latest</span> every 5s</div>
+      <div class="reading" id="readingGrid">
+        <!-- key/value tiles injected here -->
+      </div>
+      <div class="footer" id="lastUpdated">Last update: —</div>
+    </div>
+
+    <!-- RIGHT: Chat -->
+    <div class="card pad">
+      <h2>Ask Gia</h2>
+      <label for="q" style="display:block;margin:6px 0 6px">Question</label>
+      <textarea id="q" placeholder="Should I water now or wait?"></textarea>
+      <div class="row" style="margin-top:10px">
+        <button id="ask"">Ask</button>
+        <span id="statusAsk" class="chip">idle</span>
+      </div>
+      <h2 style="margin-top:16px">Answer</h2>
+      <pre id="answer" class="mono" style="white-space:pre-wrap;background:#f9fafb;border:1px solid #e5e7eb;padding:12px;border-radius:12px;min-height:80px">—</pre>
+    </div>
+  </div>
+
+  <div class="card pad" style="margin-top:16px">
+    <h2>History</h2>
+    <div class="list" id="historyList">
+      <!-- optional: you can render recent advice/questions here -->
+    </div>
+  </div>
+</div>
+
+<script>
+  // ======== CONFIG ========
+  const BACKEND_URL = "http://localhost:8000"; // change if your API is elsewhere
+  const POLL_MS = 5000;
+
+  // ======== Elements ========
+  const $uid = document.getElementById('uid');
+  const $saveUid = document.getElementById('saveUid');
+  const $statusBackend = document.getElementById('statusBackend');
+  const $statusLatest = document.getElementById('statusLatest');
+  const $readingGrid = document.getElementById('readingGrid');
+  const $lastUpdated = document.getElementById('lastUpdated');
+  const $q = document.getElementById('q');
+  const $ask = document.getElementById('ask');
+  const $answer = document.getElementById('answer');
+  const $statusAsk = document.getElementById('statusAsk');
+  const $backendUrlShow = document.getElementById('backendUrlShow');
+  const $historyList = document.getElementById('historyList');
+
+  let CURRENT_UID = localStorage.getItem('gia_uid') || "";
+  $uid.value = CURRENT_UID;
+  $backendUrlShow.textContent = `API → ${BACKEND_URL}`;
+
+  // ======== Helpers ========
+  function setChip(el, text, kind){
+    el.textContent = text;
+    el.className = "chip" + (kind ? " " + kind : "");
+  }
+  function kvTile(label, value){
+    const div = document.createElement('div');
+    div.className = 'kv';
+    const k = document.createElement('span'); k.textContent = label;
+    const v = document.createElement('span'); v.textContent = value ?? '—'; v.className='mono';
+    div.appendChild(k); div.appendChild(v);
+    return div;
+  }
+  function renderReadings(obj){
+    $readingGrid.innerHTML = "";
+    const order = ['moisture','tempC','humidity','light_lux','soil_tempC','ph','ec','color_index','growth_stage'];
+    const labels = {
+      moisture:'Moisture %', tempC:'Temp °C', humidity:'Humidity %', light_lux:'Light (lux)',
+      soil_tempC:'Soil Temp °C', ph:'pH', ec:'EC', color_index:'ColorIdx', growth_stage:'Stage'
+    };
+    order.forEach(k=>{
+      if (obj[k] !== undefined) $readingGrid.appendChild(kvTile(labels[k], obj[k]));
+    });
+  }
+
+  // ======== Backend calls ========
+  async function checkBackend(){
+    try{
+      const r = await fetch(`${BACKEND_URL}/health`);
+      if(!r.ok) throw new Error(r.status);
+      setChip($statusBackend, "backend: ok", "ok");
+    }catch(e){
+      setChip($statusBackend, "backend: offline", "err");
+    }
+  }
+
+  async function fetchLatest(){
+    if(!CURRENT_UID){ setChip($statusLatest,"latest: no UID","warn"); return; }
+    try{
+      const r = await fetch(`${BACKEND_URL}/latest?uid=${encodeURIComponent(CURRENT_UID)}`);
+      if(!r.ok) throw new Error(await r.text());
+      const data = await r.json();
+      // Expected shapes: {features, compact, packet} or {readings, compact}
+      const feat = data.features || data.readings || {};
+      renderReadings(feat);
+      const ts = new Date().toLocaleTimeString();
+      $lastUpdated.textContent = "Last update: " + ts;
+      setChip($statusLatest, "latest: ok", "ok");
+    }catch(e){
+      setChip($statusLatest, "latest: error", "err");
+    }
+  }
+
+  async function askGia(){
+    if(!CURRENT_UID){ alert("Set a UID first."); return;}
+    const question = $q.value.trim();
+    if(!question){ return; }
+    setChip($statusAsk, "asking…");
+    $ask.disabled = true;
+    try{
+      const r = await fetch(`${BACKEND_URL}/ask`, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ uid: CURRENT_UID, user_question: question })
+      });
+      if(!r.ok) throw new Error(await r.text());
+      const data = await r.json();
+      const ans = data.answer || data.response || "(no answer)";
+      $answer.textContent = ans;
+
+      const item = document.createElement('div');
+      item.className = 'kv';
+      item.appendChild(document.createElement('div')).innerHTML = `<strong>Q:</strong> ${question}`;
+      const a = document.createElement('div');
+      a.style.whiteSpace = 'pre-wrap'; a.textContent = ans;
+      item.appendChild(a);
+      $historyList.prepend(item);
+
+      setChip($statusAsk, "done", "ok");
+    }catch(e){
+      $answer.textContent = "Error: " + e.message;
+      setChip($statusAsk, "error", "err");
+    }finally{
+      $ask.disabled = false;
+    }
+  }
+
+  // ======== Events ========
+  $saveUid.onclick = ()=>{
+    CURRENT_UID = $uid.value.trim();
+    localStorage.setItem('gia_uid', CURRENT_UID);
+    fetchLatest();
+  };
+  $ask.onclick = askGia;
+
+  // ======== Init ========
+  checkBackend();
+  if(CURRENT_UID){ fetchLatest(); }
+  setInterval(fetchLatest, POLL_MS);
+</script>
+</body>
+</html>
